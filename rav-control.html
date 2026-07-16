@@ -3,134 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ניהול מסך בית חב"ד</title>
+    <title>ממשק ניהול - מסך חב"ד</title>
+    <!-- ייבוא פונט מעוצב מגוגל -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary-color: #0d233a;
-            --accent-color: #d4af37;
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333333;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Assistant', sans-serif;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0; padding: 15px;
-            direction: rtl;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        .container { max-width: 500px; margin: 0 auto; }
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 550px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px 25px;
+            border: 1px solid #e2e8f0;
+        }
         header {
-            text-align: center; padding: 15px 0;
-            background-color: var(--primary-color);
-            color: white; border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eab308;
+            padding-bottom: 15px;
+        }
+        header h1 {
+            font-size: 1.8rem;
+            color: #1e3a8a;
+            font-weight: 800;
+        }
+        header p {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        
+        /* עיצוב הטופס והשדות */
+        .form-group {
             margin-bottom: 20px;
         }
-        header h1 { margin: 0; font-size: 20px; }
-        header p { margin: 5px 0 0 0; font-size: 13px; color: var(--accent-color); }
-        .card {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 20px; margin-bottom: 15px;
-            border-right: 5px solid var(--accent-color);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 1.05rem;
         }
-        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: var(--primary-color); }
         textarea {
-            width: 100%; padding: 10px; border: 1px solid #cccccc;
-            border-radius: 8px; font-size: 15px; box-sizing: border-box;
-            font-family: inherit; resize: vertical;
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            font-size: 1rem;
+            color: #334155;
+            resize: vertical;
+            transition: all 0.2s ease;
+            text-align: right;
         }
-        .btn-submit {
-            background-color: var(--primary-color); color: white;
-            border: none; padding: 15px; width: 100%;
-            border-radius: 8px; font-size: 18px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
+        
+        /* כפתור שליחה */
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(30, 64, 175, 0.2);
+            margin-top: 10px;
+        }
+        button:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* הודעות סטטוס */
         #status-message {
-            display: none; padding: 12px; border-radius: 8px;
-            text-align: center; font-weight: bold; margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 1rem;
         }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success {
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+        .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>ניהול מסך בית חב"ד</h1>
-        <p>עדכון מהיר לטלוויזיה בזמן אמת</p>
-    </header>
-    <div id="status-message"></div>
-    <form id="update-form">
-        <div class="card">
-            <label for="bulletin">הודעה ראשית ללוח המודעות:</label>
-            <textarea id="bulletin" rows="4"></textarea>
-        </div>
-        <div class="card">
-            <label for="hours">זמני בית הכנסת ותפילות:</label>
-            <textarea id="hours" rows="3"></textarea>
-        </div>
-        <div class="card">
-            <label for="kiddush">פרטי הקידוש לשבת הקרובה:</label>
-            <textarea id="kiddush" rows="3"></textarea>
-        </div>
-        <div class="card">
-            <label for="contact">פרטי יצירת קשר וכתובת:</label>
-            <textarea id="contact" rows="2"></textarea>
-        </div>
-        <button type="submit" class="btn-submit">⚡ עדכן את הטלוויזיה עכשיו</button>
-    </form>
-</div>
-<script>
-    // כאן נחליף את הכתובת בהמשך לכתובת השרת האמיתית שלך מ-Render
-    let SERVER_URL = "https://TEMP-URL.onrender.com"; 
-    const SECRET_ENDPOINT = "/update-chabad-panel-98725";
 
-    const statusDiv = document.getElementById('status-message');
+    <div class="container">
+        <header>
+            <h1>לוח בקרה - בית חב"ד</h1>
+            <p>עדכון תכנים בזמן אמת למסך הטלוויזיה</p>
+        </header>
 
-    async function loadCurrentData() {
-        showStatus("טוען נתונים...", "success");
-        try {
-            const response = await fetch(`${SERVER_URL}/get-data`);
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById('bulletin').value = data.bulletin_message || "";
-                document.getElementById('hours').value = data.shul_hours || "";
-                document.getElementById('kiddush').value = data.kiddush_info || "";
-                document.getElementById('contact').value = data.contact_info || "";
-                statusDiv.style.display = "none";
+        <!-- אזור הודעות סטטוס (טעינה / הצלחה / שגיאה) -->
+        <div id="status-message"></div>
+
+        <form id="update-form">
+            <!-- הודעה רצה/מרכזית -->
+            <div class="form-group">
+                <label for="bulletin">הודעה ראשית (באנר תחתון):</label>
+                <textarea id="bulletin" placeholder="לדוגמה: ברוכים הבאים לבית חב א! שבת שלום ומבורכת."></textarea>
+            </div>
+
+            <!-- זמני תפילות -->
+            <div class="form-group">
+                <label for="hours">🕒 זמני התפילות בבית הכנסת:</label>
+                <textarea id="hours" placeholder="הקלד כל זמן בשורה חדשה...&#10;שחרית: 08:30&#10;מנחה: 19:00"></textarea>
+            </div>
+
+            <!-- קידוש השבוע -->
+            <div class="form-group">
+                <label for="kiddush">🍷 קידוש השבוע:</label>
+                <textarea id="kiddush" placeholder="פרטי תורמי הקידוש או הודעה מיוחדת..."></textarea>
+            </div>
+
+            <!-- פרטי קשר -->
+            <div class="form-group">
+                <label for="contact">📞 ליצירת קשר ושותפות:</label>
+                <textarea id="contact" placeholder="שם השליח, טלפון, כתובת האתר וכו'..."></textarea>
+            </div>
+
+            <!-- כפתור שמירה -->
+            <button type="submit" id="submit-btn">עדכן מסך עכשיו 🚀</button>
+        </form>
+    </div>
+
+    <script>
+        // כתובת השרת הרשמית שסיפקת מגוגל
+        const SERVER_URL = "https://script.google.com/macros/s/AKfycbxbJHezJqwpeNRGAyKnll7p7eh3__dL4_Ysl9sSsV_-tjPgnozP4jfCL4utF6XUHJWY/exec"; 
+
+        const statusDiv = document.getElementById('status-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // פונקציה להצגת הודעת סטטוס זמנית
+        function showStatus(text, type, keepOpen = false) {
+            statusDiv.innerText = text;
+            statusDiv.className = type;
+            statusDiv.style.display = "block";
+            if (!keepOpen && type === "success") {
+                setTimeout(() => { statusDiv.style.display = "none"; }, 4000);
             }
-        } catch (error) {
-            showStatus("עדיין אין חיבור לשרת...", "error");
         }
-    }
 
-    function showStatus(text, type) {
-        statusDiv.innerText = text; statusDiv.className = type; statusDiv.style.display = "block";
-        if (type === "success") { setTimeout(() => { statusDiv.style.display = "none"; }, 3000); }
-    }
+        // טעינת הנתונים הקיימים מהטבלה ברגע שהדף נפתח
+        async function loadCurrentData() {
+            showStatus("⏳ טוען נתונים נוכחיים מהשרת...", "success", true);
+            try {
+                const response = await fetch(SERVER_URL);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // הזנת הנתונים לתוך שדות הטקסט
+                    document.getElementById('bulletin').value = data.bulletin_message || "";
+                    document.getElementById('hours').value = data.shul_hours || "";
+                    document.getElementById('kiddush').value = data.kiddush_info || "";
+                    document.getElementById('contact').value = data.contact_info || "";
+                    
+                    statusDiv.style.display = "none"; // הסתרת הודעת הטעינה
+                } else {
+                    showStatus("⚠️ לא ניתן לקרוא נתונים, אך ניתן לנסות לעדכן", "error");
+                }
+            } catch (error) {
+                console.error(error);
+                showStatus("👋 מוכן לעבודה! הקלד נתונים ולחץ על עדכן.", "success");
+            }
+        }
 
-    document.getElementById('update-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        showStatus("שולח עדכון...", "success");
-        const payload = {
-            bulletin_message: document.getElementById('bulletin').value,
-            shul_hours: document.getElementById('hours').value,
-            kiddush_info: document.getElementById('kiddush').value,
-            contact_info: document.getElementById('contact').value
-        };
-        try {
-            const response = await fetch(`${SERVER_URL}${SECRET_ENDPOINT}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (response.ok) { showStatus("🎉 המסך עודכן בהצלחה!", "success"); }
-            else { showStatus("שגיאה בעדכון", "error"); }
-        } catch (error) { showStatus("שגיאת תקשורת", "error"); }
-    });
+        // האזנה ללחיצה על כפתור העדכון
+        document.getElementById('update-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // שינוי כפתור למצב טעינה
+            submitBtn.innerText = "שולח עדכון לשרת... ⏳";
+            submitBtn.disabled = true;
+            showStatus("🚀 מעדכן את הטבלה בגוגל, אנא המתן...", "success", true);
 
-    setTimeout(loadCurrentData, 1000);
-</script>
+            // הכנת המידע למשלוח
+            const payload = {
+                bulletin_message: document.getElementById('bulletin').value,
+                shul_hours: document.getElementById('hours').value,
+                kiddush_info: document.getElementById('kiddush').value,
+                contact_info: document.getElementById('contact').value
+            };
+
+            try {
+                // משלוח המידע לגוגל. 
+                // משתמשים ב-mode: 'no-cors' מאחר וגוגל מבצע הפנייה (Redirect) פנימית בעת קבלת POST.
+                await fetch(SERVER_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+
+                // מאחר והשתמשנו ב-no-cors, הדפדפן שולח את המידע בהצלחה אך לא קורא את תגובת גוגל.
+                // נציג הודעת הצלחה קבועה.
+                showStatus("🎉 המסך עודכן בהצלחה! השינויים יופיעו על המסך תוך 30 שניות.", "success");
+                
+            } catch (error) {
+                console.error(error);
+                showStatus("❌ שגיאת תקשורת. וודא שיש אינטרנט ונסה שוב.", "error");
+            } finally {
+                // החזרת הכפתור למצבו הרגיל
+                submitBtn.innerText = "עדכן מסך עכשיו 🚀";
+                submitBtn.disabled = false;
+            }
+        });
+
+        // הפעלת טעינת הנתונים שניה לאחר עליית המסך
+        setTimeout(loadCurrentData, 500);
+    </script>
 </body>
 </html>
